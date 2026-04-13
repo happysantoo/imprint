@@ -1,0 +1,28 @@
+---
+description: Java language and backend hygiene for src/main and src/test
+globs: "**/*.java"
+alwaysApply: false
+---
+
+# Java conventions
+
+## Style and APIs
+
+- Prefer **immutable** models where practical (`record`, `final` fields, unmodifiable collections from factories).
+- Use **`Optional`** only for intentional optional returns, not fields or parameters; validate non-null at boundaries (constructors, REST DTOs with Bean Validation).
+- Prefer **constructor injection** for service components; avoid field `@Autowired` in Spring code.
+
+## Errors and logging
+
+- Do not swallow exceptions (`catch` with empty body or only `printStackTrace`). Either handle, wrap with context, or rethrow.
+- Use **domain-specific unchecked exceptions** for business rule violations; preserve `cause` when wrapping.
+- Log with **SLF4J** (`LoggerFactory.getLogger`); avoid `System.out/err` outside CLI entry points. Include correlation/request id when the stack provides it.
+
+## Testing
+
+- Use **JUnit 5**; prefer **AssertJ** (`assertThat`) over bare `assertEquals` when the project already depends on AssertJ.
+- Name tests `shouldExpectedBehavior_whenCondition` or mirror production method + scenario; keep tests independent and deterministic (no order dependency, no shared mutable static state).
+
+## Performance and clarity
+
+- Use streams when they improve readability; prefer simple loops for hot paths or short lists without forcing streams.

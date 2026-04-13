@@ -1,0 +1,13 @@
+---
+description: Maven POM and dependency hygiene for Java backends
+globs: "**/pom.xml"
+alwaysApply: false
+---
+
+# Maven (Java backend)
+
+- Keep **dependency versions** in `<properties>` or **BOM** import (`dependencyManagement`); avoid repeating versions on every dependency unless the project has no parent BOM.
+- Prefer **`maven-enforcer-plugin`** (when present) for Java version and banned dependencies; align `maven.compiler.release` (or source/target) with the runtime the team ships.
+- **Scope** correctly: `test` for JUnit/assertj/testcontainers; `runtime` only when justified; avoid leaking test deps into `compile`.
+- For libraries, define a clear **`artifactId`** and avoid shading unless this is a CLI/fat-jar module (then document why).
+- After POM changes that affect versions, mention **compat** (e.g. Spring Boot ↔ Java baseline) in PR description when non-obvious.

@@ -1,0 +1,26 @@
+---
+description: Layering and REST patterns when using Spring Boot
+globs: "**/*Controller.java,**/*Service.java,**/*ServiceImpl.java,**/*Repository.java,**/config/**/*.java"
+alwaysApply: false
+---
+
+# Spring Boot backend layers
+
+Apply when the codebase uses Spring (Boot). Skip if the project is plain Java SE.
+
+## Responsibilities
+
+- **Controllers**: HTTP mapping, status codes, request/response DTOs, validation trigger only. No business rules or transactions.
+- **Services**: Use cases, orchestration, **@Transactional** boundaries (default read-write; `readOnly = true` for query-only).
+- **Repositories**: Persistence only; no HTTP or cross-aggregate orchestration.
+
+## API boundary
+
+- Expose **DTOs** (request/response) at the web layer; do not return JPA entities from controllers unless the project explicitly standardizes on open entities.
+- Use **consistent error responses** (e.g. `@ControllerAdvice` + problem detail or a single error JSON shape). Map domain exceptions to 4xx; unexpected failures to 5xx without leaking internals.
+
+## REST defaults
+
+- Meaningful **HTTP verbs and status codes** (201 + `Location` for creates, 204 for delete with no body, 409 for conflicts where applicable).
+- **Pagination** (`page`, `size` or cursor) for list endpoints that can grow; avoid unbounded lists.
+- Document public APIs with **OpenAPI** annotations when the project uses springdoc or similar.
